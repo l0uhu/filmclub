@@ -1,0 +1,38 @@
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.card {
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.btn-sm {
+    font-size: 0.8rem;
+}
+
+#film-list .col {
+    cursor: grab;
+}
+
+#film-list .col:active {
+    cursor: grabbing;
+}

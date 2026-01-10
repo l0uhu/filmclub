@@ -1,8 +1,9 @@
 {% extends "movies/base.html" %}
+{% load static %}
 {% load star_tags %}
 
 {% block content %}
-<h2>Ma Liste de Films</h2>
+<h2>🎬 Ma Liste de Films</h2>
 
 <!-- Filtre par année de visionnage -->
 <form method="get" class="mb-3 d-flex align-items-center">
@@ -37,58 +38,8 @@
     {% endfor %}
 </div>
 
-<script>
-const container = document.getElementById('film-list');
-
-let dragSrcEl = null;
-
-function handleDragStart(e) {
-    dragSrcEl = this;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.innerHTML);
-}
-
-function handleDragOver(e) {
-    if (e.preventDefault) e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    return false;
-}
-
-function handleDrop(e) {
-    if (e.stopPropagation) e.stopPropagation();
-    if (dragSrcEl != this) {
-        dragSrcEl.innerHTML = this.innerHTML;
-        this.innerHTML = e.dataTransfer.getData('text/html');
-        saveOrder();
-    }
-    return false;
-}
-
-function saveOrder() {
-    const order = Array.from(container.children).map(c => c.dataset.id);
-    fetch("{% url 'film_reorder' %}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}",
-        },
-        body: JSON.stringify({ order: order })
-    });
-}
-
-Array.from(container.children).forEach(function(item) {
-    item.setAttribute('draggable', true);
-    item.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', item.dataset.id));
-    item.addEventListener('dragover', e => e.preventDefault());
-    item.addEventListener('drop', function(e) {
-        e.preventDefault();
-        const draggedId = e.dataTransfer.getData('text/plain');
-        const draggedEl = container.querySelector(`[data-id='${draggedId}']`);
-        container.insertBefore(draggedEl, this.nextSibling);
-        saveOrder();
-    });
-});
-</script>
-
 <a href="{% url 'film_add' %}" class="btn btn-success mt-4">➕ Ajouter un film</a>
+
+<script src="{% static 'movies/js/dragdrop.js' %}"></script>
+
 {% endblock %}
