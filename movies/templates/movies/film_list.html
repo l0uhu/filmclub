@@ -1,0 +1,94 @@
+{% extends "movies/base.html" %}
+{% load star_tags %}
+
+{% block content %}
+<h2>Ma Liste de Films</h2>
+
+<!-- Filtre par année de visionnage -->
+<form method="get" class="mb-3 d-flex align-items-center">
+    <label for="annee" class="me-2">Filtrer par année de visionnage :</label>
+    <select id="annee" name="annee" class="form-select w-auto me-2">
+        <option value="">Toutes</option>
+        {% for d in annees %}
+            <option value="{{ d.year }}" {% if d.year|stringformat:"s" == annee_filter %}selected{% endif %}>
+                {{ d.year }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+</form>
+
+<!-- Liste des films -->
+<div id="film-list" class="row row-cols-1 row-cols-md-3 g-4">
+    {% for film in films %}
+    <div class="col" data-id="{{ film.id }}">
+        <div class="card h-100 shadow-sm">
+            {% if film.poster_url %}
+            <img src="{{ film.poster_url }}" class="card-img-top" alt="{{ film.titre }}">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ film.titre }} ({{ film.annee }})</h5>
+                <p>Note moyenne : {% if film.moyenne %}{{ film.moyenne|stars }}{% else %}Pas de note{% endif %}</p>
+                <a href="{% url 'film_detail' film.id %}" class="btn btn-primary btn-sm">Détails</a>
+                <a href="{% url 'film_delete' film.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+const container = document.getElementById('film-list');
+
+let dragSrcEl = null;
+
+function handleDragStart(e) {
+    dragSrcEl = this;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+    if (dragSrcEl != this) {
+        dragSrcEl.innerHTML = this.innerHTML;
+        this.innerHTML = e.dataTransfer.getData('text/html');
+        saveOrder();
+    }
+    return false;
+}
+
+function saveOrder() {
+    const order = Array.from(container.children).map(c => c.dataset.id);
+    fetch("{% url 'film_reorder' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ order: order })
+    });
+}
+
+Array.from(container.children).forEach(function(item) {
+    item.setAttribute('draggable', true);
+    item.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', item.dataset.id));
+    item.addEventListener('dragover', e => e.preventDefault());
+    item.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const draggedId = e.dataTransfer.getData('text/plain');
+        const draggedEl = container.querySelector(`[data-id='${draggedId}']`);
+        container.insertBefore(draggedEl, this.nextSibling);
+        saveOrder();
+    });
+});
+</script>
+
+<a href="{% url 'film_add' %}" class="btn btn-success mt-4">➕ Ajouter un film</a>
+{% endblock %}

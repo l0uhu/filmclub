@@ -1,0 +1,13 @@
+{% extends "movies/base.html" %}
+
+{% block content %}
+<h2>Connexion</h2>
+<form method="post" class="card p-4 shadow-sm w-50 mx-auto">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Se connecter</button>
+</form>
+<p class="text-center mt-2">
+    Pas encore de compte ? <a href="{% url 'signup' %}">Inscription</a>
+</p>
+{% endblock %}

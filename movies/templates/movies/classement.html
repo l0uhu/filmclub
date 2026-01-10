@@ -1,0 +1,31 @@
+{% extends "movies/base.html" %}
+
+{% block content %}
+<h2>🏆 Classement global</h2>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Film</th>
+            <th>Score moyen</th>
+            <th>Vu par</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in classement_films %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+                {% if item.film.poster_url %}
+                <img src="{{ item.film.poster_url }}" height="60" class="me-2 rounded">
+                {% endif %}
+                {{ item.titre }}
+            </td>
+            <td><strong>{{ item.score }}</strong></td>
+            <td>{{ item.nb_viewers }} utilisateur{{ item.nb_viewers|pluralize }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

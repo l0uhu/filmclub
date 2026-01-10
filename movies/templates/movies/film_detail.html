@@ -1,0 +1,29 @@
+{% extends "movies/base.html" %}
+{% load star_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% if film.poster_url %}
+        <img src="{{ film.poster_url }}" class="img-fluid rounded shadow" alt="{{ film.titre }}">
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <h2>{{ film.titre }} ({{ film.annee }})</h2>
+        <p><strong>Genre :</strong> {{ film.genre }}</p>
+        <p><strong>Synopsis :</strong> {{ film.synopsis }}</p>
+
+        <p><strong>Votre note :</strong> {{ note.note|stars }}</p>
+
+        <form method="post" class="mb-3">
+            {% csrf_token %}
+            {{ form.note }}
+            <button type="submit" class="btn btn-primary mt-2">Enregistrer</button>
+        </form>
+
+        <a href="{% url 'film_list' %}" class="btn btn-secondary">⬅ Retour à la liste</a>
+        <a href="{% url 'film_delete' film.id %}" class="btn btn-danger">🗑️ Supprimer</a>
+    </div>
+</div>
+{% endblock %}

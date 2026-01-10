@@ -1,0 +1,59 @@
+{% extends "movies/base.html" %}
+
+{% block content %}
+<h2>Ajouter un Film</h2>
+
+<div class="card p-4 mb-4 shadow-sm">
+    <!-- Recherche TMDB -->
+    <form method="post" class="mb-3">
+        {% csrf_token %}
+        <div class="input-group">
+            {{ search_form.query }}
+            <button class="btn btn-outline-secondary" type="submit" name="search_tmdb">🔍 Rechercher</button>
+        </div>
+    </form>
+
+    <!-- Résultats TMDB -->
+    {% if search_results %}
+        <h5>Résultats :</h5>
+        <div class="list-group mb-3">
+            {% for movie in search_results %}
+            <form method="post" class="list-group-item list-group-item-action p-2">
+                {% csrf_token %}
+                <input type="hidden" name="tmdb_id" value="{{ movie.id }}">
+                <button type="submit" name="select_movie" class="btn btn-link">{{ movie.title }} ({{ movie.release_date|slice:":4" }})</button>
+            </form>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Formulaire ajout film -->
+    {% if film_form %}
+    <h5>Ajouter "{{ film_form.initial.titre }}"</h5>
+    <form method="post">
+        {% csrf_token %}
+        {{ film_form.as_p }}
+        <div class="mb-3">
+            <label for="id_note" class="form-label">Votre note (0 à 5, step 0.5)</label>
+            <input type="number" class="form-control w-25" id="id_note" name="note" min="0" max="5" step="0.5" value="3">
+        </div>
+        <div class="mb-3">
+            <label for="id_date_visionnage" class="form-label">Date de visionnage :</label>
+            {{ film_form.date_visionnage }}
+        </div>        
+        <input type="hidden" name="tmdb_id" value="{{ selected_movie.id }}">
+        <button type="submit" name="save_film" class="btn btn-success">Ajouter et noter</button>
+    </form>
+
+    <!-- Synopsis et affiche -->
+    {% if selected_movie %}
+        <div class="mt-3 clearfix">
+            {% if selected_movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w200{{ selected_movie.poster_path }}" class="float-start me-3 mb-2">
+            {% endif %}
+            <p>{{ selected_movie.overview }}</p>
+        </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
