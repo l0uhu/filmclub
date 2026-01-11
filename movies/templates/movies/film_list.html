@@ -3,11 +3,10 @@
 {% load star_tags %}
 
 {% block content %}
-<h2>🎬 Ma Liste de Films</h2>
+<h2 class="mb-4">🎬 Ma Liste de Films</h2>
 
-<!-- Filtre par année de visionnage -->
-<form method="get" class="mb-3 d-flex align-items-center">
-    <label for="annee" class="me-2">Filtrer par année de visionnage :</label>
+<form method="get" class="mb-4 d-flex align-items-center">
+    <label for="annee" class="me-2">Filtrer par année :</label>
     <select id="annee" name="annee" class="form-select w-auto me-2">
         <option value="">Toutes</option>
         {% for d in annees %}
@@ -19,19 +18,21 @@
     <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
 </form>
 
-<!-- Liste des films -->
-<div id="film-list" class="row row-cols-1 row-cols-md-3 g-4">
+<div id="film-list" class="row row-cols-1 row-cols-md-3 g-4"
+    data-reorder-url="{% url 'film_reorder' %}" data-csrf-token="{{ csrf_token }}">
     {% for film in films %}
     <div class="col" data-id="{{ film.id }}">
         <div class="card h-100 shadow-sm">
             {% if film.poster_url %}
             <img src="{{ film.poster_url }}" class="card-img-top" alt="{{ film.titre }}">
             {% endif %}
-            <div class="card-body">
+            <div class="card-body d-flex flex-column">
                 <h5 class="card-title">{{ film.titre }} ({{ film.annee }})</h5>
-                <p>Note moyenne : {% if film.moyenne %}{{ film.moyenne|stars }}{% else %}Pas de note{% endif %}</p>
-                <a href="{% url 'film_detail' film.id %}" class="btn btn-primary btn-sm">Détails</a>
-                <a href="{% url 'film_delete' film.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                <p class="mb-2">Note moyenne : {% if film.moyenne %}{{ film.moyenne|stars }}{% else %}Pas de note{% endif %}</p>
+                <div class="mt-auto">
+                    <a href="{% url 'film_detail' film.id %}" class="btn btn-primary btn-sm me-1">Détails</a>
+                    <a href="{% url 'film_delete' film.id %}" class="btn btn-danger btn-sm">Supprimer</a>
+                </div>
             </div>
         </div>
     </div>
