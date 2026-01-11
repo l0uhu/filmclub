@@ -2,15 +2,29 @@
 {% load static %}
 
 {% block content %}
-<h2>🏆 Classement global</h2>
+<h2>🏆 Les Oscars 🏆</h2>
 
+<!-- Sélecteur d'année -->
+<form method="get" class="mb-4 d-flex align-items-center">
+    <label for="annee" class="me-2">Sélectionner l'année :</label>
+    <select id="annee" name="annee" class="form-select w-auto me-2">
+        {% for d in annees %}
+            <option value="{{ d.year }}" {% if d.year|stringformat:"s" == annee_filter %}selected{% endif %}>
+                {{ d.year }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+</form>
+
+<!-- Tableau du classement -->
 <table class="table table-striped align-middle">
     <thead>
         <tr>
             <th>#</th>
             <th>Film</th>
             <th>Score moyen</th>
-            <th>Vu par</th>
+            <th>Vues</th>
         </tr>
     </thead>
     <tbody>
@@ -24,7 +38,7 @@
                 {{ item.titre }}
             </td>
             <td><strong>{{ item.score }}</strong></td>
-            <td>{{ item.nb_viewers }} utilisateur{{ item.nb_viewers|pluralize }}</td>
+            <td>{{ item.nb_viewers }}</td>
         </tr>
         {% endfor %}
     </tbody>

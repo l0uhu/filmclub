@@ -10,18 +10,43 @@ from .models import Film, Note
 from .forms import FilmForm, TMDBSearchForm, NoteForm
 from .tmdb import search_movies, get_movie_details
 import json
+from datetime import date
 
 # Page d'accueil : liste des films
 @login_required
 def film_list(request):
-    films = Film.objects.filter(utilisateur=request.user).order_by('ordre')
-    # Filtre par année de visionnage si fourni en GET
-    annee_filter = request.GET.get('annee')
-    if annee_filter:
-        films = films.filter(date_visionnage__year=annee_filter)
-    # Récupérer toutes les années de visionnage pour le menu
-    annees = Film.objects.filter(utilisateur=request.user).dates('date_visionnage', 'year', order='DESC')
-    return render(request, "movies/film_list.html", {"films": films, "annees": annees, "annee_filter": annee_filter,})
+    # Année sélectionnée depuis GET
+    annee_filter = request.GET.get('annee', str(date.today().year))
+
+    # Liste des années existantes pour les films
+    films_existants = Film.objects.exclude(date_visionnage__isnull=True)
+    annees_list = films_existants.dates('date_visionnage', 'year', order='DESC')
+    if not annees_list:
+        annees_list = [date.today()]
+
+    # Convertir en int/année
+    annees = [d.year for d in annees_list]
+
+    # Ajouter l'année en cours en première position si elle n'est pas déjà dans la liste
+    current_year = date.today().year
+    if current_year not in annees:
+        annees = [current_year] + annees
+    else:
+        # Placer l'année en cours en tête
+        annees = [current_year] + [y for y in annees if y != current_year]
+
+    # Filtrer les films
+    if annee_filter == "":
+        films = Film.objects.filter(utilisateur=request.user).order_by('ordre')
+    else:
+        films = Film.objects.filter(date_visionnage__year=annee_filter, utilisateur=request.user).order_by('ordre')
+
+    context = {
+        'films': films,
+        'annees': annees,
+        'annee_filter': annee_filter,
+    }
+    return render(request, 'movies/film_list.html', context)
 
 # Ajouter un film avec recherche TMDB
 @login_required
@@ -152,7 +177,12 @@ def film_reorder(request):
     return JsonResponse({'status': 'error', 'error': 'Invalid request'}, status=400)
 
 def classement(request):
-    films = Film.objects.all().select_related('utilisateur')
+    annee_filter = request.GET.get("annee")
+    if not annee_filter:
+        annee_filter = str(date.today().year)
+    annees = Film.objects.dates('date_visionnage', 'year', order='DESC')
+
+    films = Film.objects.filter(date_visionnage__year=annee_filter).select_related('utilisateur')
 
     points_par_position = [50, 40, 30, 20, 10]
 
@@ -204,5 +234,5 @@ def classement(request):
     return render(
         request,
         "movies/classement.html",
-        {"classement_films": classement_films}
+        {"annees": annees, "annee_filter": annee_filter, "classement_films": classement_films}
     )

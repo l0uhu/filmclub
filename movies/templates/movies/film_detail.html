@@ -15,7 +15,9 @@
         <p><strong>Genre :</strong> {{ film.genre }}</p>
         <p><strong>Synopsis :</strong> {{ film.synopsis }}</p>
 
-        <p><strong>Votre note :</strong> {{ note.note|stars }}</p>
+        <p><strong>Date de visionnage :</strong> {{ film.date_visionnage|date:"d/m/Y" }}</p>
+
+        <p><strong>Note :</strong> {{ note.note|stars }}</p>
 
         <form method="post" class="mb-3">
             {% csrf_token %}
