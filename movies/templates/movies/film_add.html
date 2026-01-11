@@ -33,13 +33,13 @@
     <h5>Ajouter "{{ film_form.initial.titre }}"</h5>
     <form method="post">
         {% csrf_token %}
-        {{ film_form.as_p }}
+        <div class="mb-3" style="display: none;">{{ film_form.as_p }}</div>
         <div class="mb-3">
-            <label for="id_note" class="form-label">Votre note (0 à 5, step 0.5)</label>
+            <label for="id_note" class="form-label"><strong>Note : </strong></label>
             <input type="number" class="form-control w-25" id="id_note" name="note" min="0" max="5" step="0.5" value="3">
         </div>
         <div class="mb-3">
-            <label for="id_date_visionnage" class="form-label">Date de visionnage :</label>
+            <label for="id_date_visionnage" class="form-label"><strong>Date de visionnage :</strong></label>
             {{ film_form.date_visionnage }}
         </div>        
         <input type="hidden" name="tmdb_id" value="{{ selected_movie.id }}">
@@ -52,7 +52,8 @@
             {% if selected_movie.poster_path %}
             <img src="https://image.tmdb.org/t/p/w200{{ selected_movie.poster_path }}" class="float-start me-3 mb-2">
             {% endif %}
-            <p>{{ selected_movie.overview }}</p>
+            <p><strong>Date de sortie :</strong> {{ selected_movie.release_date }}</p>
+            <p><strong>Synopsis :</strong> {{ selected_movie.overview }}</p>
         </div>
     {% endif %}
     {% endif %}

@@ -85,6 +85,8 @@ def film_add(request):
                 if tmdb_id:
                     movie = get_movie_details(tmdb_id)
                     film.synopsis = movie.get("overview", "")
+                    film.titre = movie.get("original_title", "")
+                    film.releasedate = movie.get("release_date", "")
                     poster_path = movie.get("poster_path")
                     if poster_path:
                         film.poster_url = "https://image.tmdb.org/t/p/w300" + poster_path

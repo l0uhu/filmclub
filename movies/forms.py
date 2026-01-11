@@ -27,7 +27,7 @@ class FilmForm(forms.ModelForm):
         # Mettre par défaut l'année courante
         if not self.instance.pk:
             today = date.today()
-            self.initial['date_visionnage'] = today
+            self.initial['date_visionnage'] = '2025-01-01'#today
 
 class NoteForm(forms.ModelForm):
     class Meta:

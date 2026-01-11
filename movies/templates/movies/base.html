@@ -22,6 +22,9 @@
             </div>
             <div class="mt-auto">
                 {% if user.is_authenticated %}
+                <div class="list-group-item list-group-item-action py-3">
+                    👤 {{ request.user.username }}
+                </div>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="list-group-item list-group-item-action py-3 text-danger">

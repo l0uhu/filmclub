@@ -63,3 +63,16 @@ body {
 .list-group-item:hover {
     background-color: #e9ecef;
 }
+
+#id_participants {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+#id_participants label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
